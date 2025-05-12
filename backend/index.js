@@ -10,7 +10,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/api', verifyAccesKey, pacientesRoutes);
+app.use('/api/pacientes', verifyAccesKey, pacientesRoutes);
 
 
 const PORT = process.env.PORT || 3000;  
