@@ -14,6 +14,8 @@ export function verifyAccesKey(req, res, next) {
     console
     return res.status(403).json({
       message: 'No autorizado',
+      recibido: accesKey,
+      esperado: API_SECRET
     });
   }
 }
