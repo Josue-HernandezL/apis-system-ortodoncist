@@ -5,7 +5,7 @@ const API_SECRET = (process.env.ACCES_KEY || '').trim();
 
 export function verifyAccesKey(req, res, next) {
   let accesKey = (req.headers['x-api-key'] || '').trim();
-    console.log('Acceso a la API:', accesKey);
+    console.log('Acceso a la API');
   if (accesKey === API_SECRET) {
     return next();
     console.log('Acceso permitido');
@@ -14,8 +14,8 @@ export function verifyAccesKey(req, res, next) {
     console
     return res.status(403).json({
       message: 'No autorizado',
-      recibido: accesKey,
-      esperado: API_SECRET
+      error: 'Acceso denegado. Clave de acceso no válida.',
+      status: 403
     });
   }
 }
