@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
-
+const ADMIN_UID = (process.env.ADMIN_UID || '').trim();
 const API_SECRET = (process.env.ACCES_KEY || '').trim();
 
 export function verifyAccesKey(req, res, next) {
@@ -19,3 +19,4 @@ export function verifyAccesKey(req, res, next) {
     });
   }
 }
+

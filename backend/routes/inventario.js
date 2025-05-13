@@ -2,7 +2,7 @@ import express from 'express';
 import db from '../../firebaseConfig.js';
  
 const router = express.Router();
-const refPacientes = db.ref('pacientes');
+const refInventario = db.ref('inventario');
 
 const ref = db.ref("Pruba de conexion");
 await ref.set({ mensaje: 'Conexión exitosa desde Node.js' });
@@ -16,59 +16,59 @@ ref.once('value')
     console.error('Error al leer:', error);
   });
 
-// POST: Crear paciente
+// POST: Crear ineventario
 router.post('/', async (req, res) => {
   console.log('POST recibido:', req.body);  // para verificar en consola
 
-  const newRef = refPacientes.push();
+  const newRef = refInventario.push();
   await newRef.set(req.body);
 
   res.json({ id: newRef.key, ...req.body });
 });
 
-// GET: Leer todos los pacientes
+// GET: Leer todos los inventario
 router.get('/', async (req, res) => {
-  const snapshot = await refPacientes.once('value');
+  const snapshot = await refInventario.once('value');
   res.json(snapshot.val() || {});
 });
 
-// GET: Obtener un paciente específico por ID
+// GET: Obtener un inventario específica por ID
 router.get('/:id', async (req, res) => {
-  const pacienteId = req.params.id;
-  const pacienteRef = refPacientes.child(pacienteId);
+  const inventarioId = req.params.id;
+  const inventarioRef = refInventario.child(inventarioId);
 
   try {
-    const snapshot = await pacienteRef.once('value');
+    const snapshot = await inventarioRef.once('value');
 
     if (!snapshot.exists()) {
-      return res.status(404).json({ error: 'Paciente no encontrado' });
+      return res.status(404).json({ error: 'inventario no encontrado' });
     }
 
-    res.json({ id: pacienteId, ...snapshot.val() });
+    res.json({ id: inventarioId, ...snapshot.val() });
   } catch (error) {
-    console.error('Error al obtener paciente:', error);
+    console.error('Error al obtener inventario:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
-// PUT: Actualizar paciente
+// PUT: Actualizar inventario
 router.put('/:id', async (req, res) => {
-  const pacienteId = req.params.id;
+  const inventarioId = req.params.id;
   const updateData = req.body;
 
   try {
-    await refPacientes.child(pacienteId).update(updateData);
-    res.json({ message: 'Paciente actualizado correctamente' });
+    await refInventario.child(inventarioId).update(updateData);
+    res.json({ message: 'inventario actualizado correctamente' });
   } catch (error) {
-    console.error('Error actualizando paciente:', error);
-    res.status(500).json({ error: 'No se pudo actualizar el paciente' });
+    console.error('Error actualizando inventario:', error);
+    res.status(500).json({ error: 'No se pudo actualizar el inventario' });
   }
 });
 
-// DELETE: Eliminar paciente
+// DELETE: Eliminar inventario
 router.delete('/:id', async (req, res) => {
-  await refPacientes.child(req.params.id).remove();
-  res.json({ message: 'Paciente eliminado' });
+  await inventario.child(req.params.id).remove();
+  res.json({ message: 'inventario eliminado' });
 });
 
 export default router;

@@ -2,7 +2,7 @@ import express from 'express';
 import db from '../../firebaseConfig.js';
  
 const router = express.Router();
-const refPacientes = db.ref('pacientes');
+const refPagos = db.ref('pagos');
 
 const ref = db.ref("Pruba de conexion");
 await ref.set({ mensaje: 'Conexión exitosa desde Node.js' });
@@ -16,59 +16,59 @@ ref.once('value')
     console.error('Error al leer:', error);
   });
 
-// POST: Crear paciente
+// POST: Crear pago
 router.post('/', async (req, res) => {
   console.log('POST recibido:', req.body);  // para verificar en consola
 
-  const newRef = refPacientes.push();
+  const newRef = refPagos.push();
   await newRef.set(req.body);
 
   res.json({ id: newRef.key, ...req.body });
 });
 
-// GET: Leer todos los pacientes
+// GET: Leer todos los pagos
 router.get('/', async (req, res) => {
-  const snapshot = await refPacientes.once('value');
+  const snapshot = await refPagos.once('value');
   res.json(snapshot.val() || {});
 });
 
-// GET: Obtener un paciente específico por ID
+// GET: Obtener un pago específica por ID
 router.get('/:id', async (req, res) => {
-  const pacienteId = req.params.id;
-  const pacienteRef = refPacientes.child(pacienteId);
+  const pagoId = req.params.id;
+  const pagoRef = refPagos.child(pagoId);
 
   try {
-    const snapshot = await pacienteRef.once('value');
+    const snapshot = await pagoRef.once('value');
 
     if (!snapshot.exists()) {
-      return res.status(404).json({ error: 'Paciente no encontrado' });
+      return res.status(404).json({ error: 'pago no encontrado' });
     }
 
-    res.json({ id: pacienteId, ...snapshot.val() });
+    res.json({ id: pagoId, ...snapshot.val() });
   } catch (error) {
-    console.error('Error al obtener paciente:', error);
+    console.error('Error al obtener pago:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
-// PUT: Actualizar paciente
+// PUT: Actualizar pago
 router.put('/:id', async (req, res) => {
-  const pacienteId = req.params.id;
+  const pagoId = req.params.id;
   const updateData = req.body;
 
   try {
-    await refPacientes.child(pacienteId).update(updateData);
-    res.json({ message: 'Paciente actualizado correctamente' });
+    await refPagos.child(pagoId).update(updateData);
+    res.json({ message: 'pago actualizado correctamente' });
   } catch (error) {
-    console.error('Error actualizando paciente:', error);
-    res.status(500).json({ error: 'No se pudo actualizar el paciente' });
+    console.error('Error actualizando pago:', error);
+    res.status(500).json({ error: 'No se pudo actualizar el pago' });
   }
 });
 
-// DELETE: Eliminar paciente
+// DELETE: Eliminar pago
 router.delete('/:id', async (req, res) => {
-  await refPacientes.child(req.params.id).remove();
-  res.json({ message: 'Paciente eliminado' });
+  await pagos.child(req.params.id).remove();
+  res.json({ message: 'pago eliminado' });
 });
 
 export default router;
