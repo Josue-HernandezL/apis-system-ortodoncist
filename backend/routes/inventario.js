@@ -67,7 +67,7 @@ router.put('/:id', async (req, res) => {
 
 // DELETE: Eliminar inventario
 router.delete('/:id', async (req, res) => {
-  await inventario.child(req.params.id).remove();
+  await refInventario.child(req.params.id).remove();
   res.json({ message: 'inventario eliminado' });
 });
 
