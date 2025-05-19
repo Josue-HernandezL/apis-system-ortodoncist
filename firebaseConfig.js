@@ -17,5 +17,5 @@ admin.initializeApp({
   databaseURL: "https://ortodoncista-system-5c89c-default-rtdb.firebaseio.com"
 });
 
-const db = admin.database();
+const db = admin;
 export default db;
