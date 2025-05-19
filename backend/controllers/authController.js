@@ -6,7 +6,7 @@ const ONLY_ADMIN_EMAIL = 'jh6466011@gmail.com'; // Cambia esto por el correo del
 
 // Verifica si ya existe un usuario con ese correo
 const existeAdmin = async () => {
-  const users = admin.auth().listUsers();
+  const users = await admin.auth().listUsers();
   return users.users.some(u => u.email === ONLY_ADMIN_EMAIL);
 };
 
@@ -20,7 +20,8 @@ export const crearAdmin = async (req, res) => {
       return res.status(403).json({ error: 'Este correo no está autorizado como administrador.' });
     }
 
-    const userRecord = admin.auth().createUser({ email, password, displayName });
+    const userRecord = await admin.auth().createUser({ email, password, displayName });
+
     await usuariosRef.child(userRecord.uid).set({
       email,
       displayName,
@@ -28,7 +29,7 @@ export const crearAdmin = async (req, res) => {
       creadoEn: Date.now()
     });
 
-    res.status(201).json({ message: 'Administrador creado exitosamente.' });
+    res.status(201).json({ message: 'Administrador creado exitosamente.', uid: userRecord.uid });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -47,7 +48,7 @@ export const crearUsuario = async (req, res) => {
     }
 
     const { email, password, displayName } = req.body;
-    const nuevoUsuario = admin.auth().createUser({ email, password, displayName });
+    const nuevoUsuario = await admin.auth().createUser({ email, password, displayName });
 
     await usuariosRef.child(nuevoUsuario.uid).set({
       email,
@@ -66,7 +67,7 @@ export const crearUsuario = async (req, res) => {
 export const enviarLinkRecuperacion = async (req, res) => {
   const { email } = req.body;
   try {
-    const link = admin.auth().generatePasswordResetLink(email);
+    const link = await admin.auth().generatePasswordResetLink(email);
     res.status(200).json({ message: 'Correo de recuperación enviado.', link });
   } catch (error) {
     res.status(500).json({ error: error.message });
