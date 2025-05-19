@@ -131,11 +131,36 @@ export const aprobarSolicitud = async (req, res) => {
 
     await solicitudRef.update({ estado: 'aprobada', aprobadaEn: Date.now() });
 
-    res.status(200).send('✅ Usuario creado exitosamente.');
+    // 🔔 Notificar al usuario
+    await enviarCorreoUsuarioAprobado(email, displayName);
+
+    res.status(200).send('✅ Usuario creado y notificado al correo.');
   } catch (error) {
     res.status(500).send('Error al aprobar solicitud: ' + error.message);
   }
 };
+
+async function enviarCorreoUsuarioAprobado(email, nombre) {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.ADMIN_MAIL,
+      pass: process.env.ADMIN_MAIL_PASS
+    }
+  });
+
+  await transporter.sendMail({
+    from: `"Sistema Ortodoncista" <${process.env.ADMIN_MAIL}>`,
+    to: email,
+    subject: '✅ Tu cuenta ha sido aprobada',
+    html: `
+      <p>Hola <strong>${nombre}</strong>,</p>
+      <p>Tu solicitud para registrarte en el sistema ha sido <strong>aprobada</strong>.</p>
+      <p>Ahora puedes iniciar sesión en: <a href="https://apis-system-ortodoncist.onrender.com/login">Iniciar sesión</a></p>
+    `
+  });
+}
+
 
 // 🔽 NUEVO: Función para enviar correo al admin
 async function enviarCorreoAdmin(correoSolicitante, nombre, link) {
