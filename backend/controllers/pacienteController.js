@@ -1,4 +1,4 @@
-import {admin, db} from '../../firebaseConfig.js';
+import {db} from '../../firebaseConfig.js';
 
 const pacientesRef = db.ref('pacientes');
 
