@@ -1,6 +1,4 @@
-import admin from '../../firebaseConfig.js';
-
-const db = admin.database();
+import {admin, db} from '../../firebaseConfig.js';
 
 const refInventario = db.ref('inventario');
 

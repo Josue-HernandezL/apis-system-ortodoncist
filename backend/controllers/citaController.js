@@ -1,6 +1,4 @@
-import admin from '../../firebaseConfig.js';
-
-const db = admin.database();
+import {admin, db} from '../../firebaseConfig.js';
 
 const refCitas = db.ref('citas');
 
