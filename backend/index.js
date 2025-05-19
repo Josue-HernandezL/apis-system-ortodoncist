@@ -6,6 +6,7 @@ import citaRoutes from './routes/citaRoutes.js';
 import inventarioRoutes from './routes/inventarioRoutes.js';
 import pagoRoutes from './routes/pagoRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import { authenticate } from './middleware/auth.js';
 
 dotenv.config();
 
@@ -13,10 +14,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/pacientes', pacientesRoutes);
-app.use('/api/citas', citaRoutes);
-app.use('/api/inventario', inventarioRoutes);
-app.use('/api/pagos', pagoRoutes);
+app.use('/api/pacientes', authenticate, pacientesRoutes);
+app.use('/api/citas', authenticate, citaRoutes);
+app.use('/api/inventario', authenticate, inventarioRoutes);
+app.use('/api/pagos', authenticate, pagoRoutes);
+
+
 
 app.use('/api/auth', authRoutes);
 
