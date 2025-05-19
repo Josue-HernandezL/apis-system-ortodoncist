@@ -1,5 +1,6 @@
 import admin from '../../firebaseConfig.js';
 
+const db = admin.database();
 const usuariosRef = admin.ref('usuarios');
 const ONLY_ADMIN_EMAIL = 'jh6466011@gmail.com'; // Cambia esto por el correo del admin
 
