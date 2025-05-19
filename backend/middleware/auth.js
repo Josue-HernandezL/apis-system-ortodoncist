@@ -1,22 +1,21 @@
-import dotenv from 'dotenv';
-dotenv.config();
-const ADMIN_UID = (process.env.ADMIN_UID || '').trim();
-const API_SECRET = (process.env.ACCES_KEY || '').trim();
+import admin from '../../firebaseConfig.js';
 
-export function verifyAccesKey(req, res, next) {
-  let accesKey = (req.headers['x-api-key'] || '').trim();
-    console.log('Acceso a la API');
-  if (accesKey === API_SECRET) {
-    return next();
-    console.log('Acceso permitido');
-  } else {
-    console.error('Acceso denegado. Clave de acceso no válida.');
-    console
-    return res.status(403).json({
-      message: 'No autorizado',
-      error: 'Acceso denegado. Clave de acceso no válida.',
-      status: 403
-    });
+export const authenticate = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader?.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Token no enviado o mal formado.' });
   }
-}
+
+  const token = authHeader.split('Bearer ')[1];
+
+  try {
+    const decoded = await admin.auth().verifyIdToken(token);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    return res.status(401).json({ error: 'Token inválido o expirado.' });
+  }
+};
+
 

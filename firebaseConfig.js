@@ -18,5 +18,4 @@ admin.initializeApp({
 });
 
 const db = admin.database();
-
 export default db;
