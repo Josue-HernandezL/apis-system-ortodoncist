@@ -95,7 +95,10 @@ export const solicitarRegistro = async (req, res) => {
     });
 
     const linkAprobacion = `https://apis-system-ortodoncist.onrender.com/api/auth/aprobar/${solicitudId}`;
+    console.log('Enviando correo...');
     await enviarCorreoAdmin(email, displayName, linkAprobacion);
+    console.log('Correo enviado.');
+
 
     res.status(200).json({ message: 'Solicitud enviada para aprobación.' });
   } catch (error) {
@@ -165,12 +168,14 @@ async function enviarCorreoUsuarioAprobado(email, nombre) {
 // 🔽 NUEVO: Función para enviar correo al admin
 async function enviarCorreoAdmin(correoSolicitante, nombre, link) {
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.ADMIN_MAIL,
-      pass: process.env.ADMIN_MAIL_PASS
-    }
-  });
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.ADMIN_MAIL,
+    pass: process.env.ADMIN_MAIL_PASS
+  }
+});
 
   await transporter.sendMail({
     from: `"Sistema Ortodoncista" <${process.env.ADMIN_MAIL}>`,
