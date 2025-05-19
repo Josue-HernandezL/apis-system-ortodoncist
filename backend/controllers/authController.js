@@ -47,10 +47,12 @@ export const crearUsuario = async (req, res) => {
       return res.status(403).json({ error: 'Solo el administrador con correo verificado puede crear usuarios.' });
     }
 
+    // ⬇️ Solo si pasa la validación, se continúa
     const { email, password, displayName } = req.body;
+
     const nuevoUsuario = await admin.auth().createUser({ email, password, displayName });
 
-    await usuariosRef.child(nuevoUsuario.uid).set({
+    await admin.database().ref('usuarios').child(nuevoUsuario.uid).set({
       email,
       displayName,
       rol: 'usuario',
@@ -58,11 +60,13 @@ export const crearUsuario = async (req, res) => {
       creadoEn: Date.now()
     });
 
-    res.status(201).json({ message: 'Usuario creado y registrado en la base de datos.', uid: nuevoUsuario.uid });
+    return res.status(201).json({ message: 'Usuario creado y registrado en la base de datos.', uid: nuevoUsuario.uid });
+
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
+
 
 export const enviarLinkRecuperacion = async (req, res) => {
   const { email } = req.body;
