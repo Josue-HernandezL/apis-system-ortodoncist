@@ -1,8 +1,10 @@
-import {admin, db} from '../../firebaseConfig.js';
+import {admin} from '../../firebaseConfig.js';
 import nodemailer from 'nodemailer';
 import { v4 as uuidv4 } from 'uuid';
 import dotenv from 'dotenv';
 dotenv.config();
+
+const db = admin.database();
 
 const usuariosRef = db.ref('usuarios');
 const solicitudesRef = db.ref('solicitudes');
