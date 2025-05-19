@@ -2,7 +2,9 @@ import express from 'express';
 import {
   crearAdmin,
   crearUsuario,
-  enviarLinkRecuperacion
+  enviarLinkRecuperacion,
+  solicitarRegistro,
+  aprobarSolicitud
 } from '../controllers/authController.js';
 
 const router = express.Router();
@@ -15,5 +17,9 @@ router.post('/register', crearUsuario);
 
 // Recuperación de contraseña
 router.post('/reset-password', enviarLinkRecuperacion);
+
+// 🔽 Nuevas rutas
+router.post('/solicitud', solicitarRegistro);
+router.get('/aprobar/:solicitudId', aprobarSolicitud);
 
 export default router;

@@ -1,10 +1,13 @@
 import admin from '../../firebaseConfig.js';
+import nodemailer from 'nodemailer';
+import { v4 as uuidv4 } from 'uuid';
 
 const db = admin.database();
 const usuariosRef = db.ref('usuarios');
-const ONLY_ADMIN_EMAIL = 'jh6466011@gmail.com'; // Cambia esto por el correo del admin
+const solicitudesRef = db.ref('solicitudes');
+const ONLY_ADMIN_EMAIL = 'jh6466011@gmail.com'; // Cambia esto si es necesario
 
-// Verifica si ya existe un usuario con ese correo
+// Verifica si ya existe un usuario admin
 const existeAdmin = async () => {
   const users = await admin.auth().listUsers();
   return users.users.some(u => u.email === ONLY_ADMIN_EMAIL);
@@ -47,12 +50,11 @@ export const crearUsuario = async (req, res) => {
       return res.status(403).json({ error: 'Solo el administrador con correo verificado puede crear usuarios.' });
     }
 
-    // ⬇️ Solo si pasa la validación, se continúa
     const { email, password, displayName } = req.body;
 
     const nuevoUsuario = await admin.auth().createUser({ email, password, displayName });
 
-    await admin.database().ref('usuarios').child(nuevoUsuario.uid).set({
+    await usuariosRef.child(nuevoUsuario.uid).set({
       email,
       displayName,
       rol: 'usuario',
@@ -67,7 +69,6 @@ export const crearUsuario = async (req, res) => {
   }
 };
 
-
 export const enviarLinkRecuperacion = async (req, res) => {
   const { email } = req.body;
   try {
@@ -77,3 +78,84 @@ export const enviarLinkRecuperacion = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+// 🔽 NUEVO: Solicitud de usuario
+export const solicitarRegistro = async (req, res) => {
+  const { email, password, displayName } = req.body;
+
+  try {
+    const solicitudId = uuidv4();
+
+    await solicitudesRef.child(solicitudId).set({
+      email,
+      password,
+      displayName,
+      estado: 'pendiente',
+      fecha: Date.now()
+    });
+
+    const linkAprobacion = `https://apis-system-ortodoncist.onrender.com/api/auth/aprobar/${solicitudId}`;
+    await enviarCorreoAdmin(email, displayName, linkAprobacion);
+
+    res.status(200).json({ message: 'Solicitud enviada para aprobación.' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// 🔽 NUEVO: Aprobación por parte del admin
+export const aprobarSolicitud = async (req, res) => {
+  const { solicitudId } = req.params;
+  const solicitudRef = solicitudesRef.child(solicitudId);
+
+  try {
+    const snapshot = await solicitudRef.once('value');
+    if (!snapshot.exists()) {
+      return res.status(404).send('Solicitud no encontrada.');
+    }
+
+    const { email, password, displayName, estado } = snapshot.val();
+    if (estado === 'aprobada') {
+      return res.status(400).send('Esta solicitud ya fue aprobada.');
+    }
+
+    const nuevoUsuario = await admin.auth().createUser({ email, password, displayName });
+
+    await usuariosRef.child(nuevoUsuario.uid).set({
+      email,
+      displayName,
+      rol: 'usuario',
+      creadoPor: 'admin',
+      creadoEn: Date.now()
+    });
+
+    await solicitudRef.update({ estado: 'aprobada', aprobadaEn: Date.now() });
+
+    res.status(200).send('✅ Usuario creado exitosamente.');
+  } catch (error) {
+    res.status(500).send('Error al aprobar solicitud: ' + error.message);
+  }
+};
+
+// 🔽 NUEVO: Función para enviar correo al admin
+async function enviarCorreoAdmin(correoSolicitante, nombre, link) {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.ADMIN_MAIL,
+      pass: process.env.ADMIN_MAIL_PASS
+    }
+  });
+
+  await transporter.sendMail({
+    from: `"Sistema Ortodoncista" <${process.env.ADMIN_MAIL}>`,
+    to: ONLY_ADMIN_EMAIL,
+    subject: `Nueva solicitud de registro: ${correoSolicitante}`,
+    html: `
+      <p>Nombre: <strong>${nombre}</strong></p>
+      <p>Correo: <strong>${correoSolicitante}</strong></p>
+      <p>Haz clic para aprobar el registro:</p>
+      <a href="${link}">${link}</a>
+    `
+  });
+}
