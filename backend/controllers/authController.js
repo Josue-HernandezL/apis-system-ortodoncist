@@ -1,12 +1,11 @@
-import admin from '../../firebaseConfig.js';
+import db from '../../firebaseConfig.js';
 
-const db = admin;
 const usuariosRef = db.ref('usuarios');
-const ONLY_ADMIN_EMAIL = 'ajh6466011@gmail.com'; // Cambia esto por el correo del admin
+const ONLY_ADMIN_EMAIL = 'jh6466011@gmail.com'; // Cambia esto por el correo del admin
 
 // Verifica si ya existe un usuario con ese correo
 const existeAdmin = async () => {
-  const users = await admin.auth().listUsers();
+  const users = db.auth().listUsers();
   return users.users.some(u => u.email === ONLY_ADMIN_EMAIL);
 };
 
@@ -20,7 +19,7 @@ export const crearAdmin = async (req, res) => {
       return res.status(403).json({ error: 'Este correo no está autorizado como administrador.' });
     }
 
-    const userRecord = await admin.auth().createUser({ email, password, displayName });
+    const userRecord = db.auth().createUser({ email, password, displayName });
     await usuariosRef.child(userRecord.uid).set({
       email,
       displayName,
@@ -39,7 +38,7 @@ export const crearUsuario = async (req, res) => {
   if (!token) return res.status(401).json({ error: 'Token no proporcionado.' });
 
   try {
-    const decoded = await admin.auth().verifyIdToken(token);
+    const decoded = db.auth().verifyIdToken(token);
     const emailAdmin = decoded.email;
 
     if (emailAdmin !== ONLY_ADMIN_EMAIL || !decoded.email_verified) {
@@ -47,7 +46,7 @@ export const crearUsuario = async (req, res) => {
     }
 
     const { email, password, displayName } = req.body;
-    const nuevoUsuario = await admin.auth().createUser({ email, password, displayName });
+    const nuevoUsuario = db.auth().createUser({ email, password, displayName });
 
     await usuariosRef.child(nuevoUsuario.uid).set({
       email,
@@ -66,7 +65,7 @@ export const crearUsuario = async (req, res) => {
 export const enviarLinkRecuperacion = async (req, res) => {
   const { email } = req.body;
   try {
-    const link = await admin.auth().generatePasswordResetLink(email);
+    const link = db.auth().generatePasswordResetLink(email);
     res.status(200).json({ message: 'Correo de recuperación enviado.', link });
   } catch (error) {
     res.status(500).json({ error: error.message });
