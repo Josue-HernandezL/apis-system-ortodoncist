@@ -39,7 +39,7 @@ export const crearUsuario = async (req, res) => {
   if (!token) return res.status(401).json({ error: 'Token no proporcionado.' });
 
   try {
-    const decoded = admin.auth().verifyIdToken(token);
+    const decoded = await admin.auth().verifyIdToken(token);
     const emailAdmin = decoded.email;
 
     if (emailAdmin !== ONLY_ADMIN_EMAIL || !decoded.email_verified) {
