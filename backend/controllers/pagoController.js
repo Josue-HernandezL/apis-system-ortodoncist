@@ -1,5 +1,6 @@
-import db from '../../firebaseConfig.js';
+import admin from '../../firebaseConfig.js';
 
+const db = admin.database();
 const refPagos = db.ref('pagos');
 
 export const crearPago = async (req, res) => {

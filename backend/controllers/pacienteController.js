@@ -1,5 +1,6 @@
-import db from '../../firebaseConfig.js';
+import admin from '../../firebaseConfig.js';
 
+const db = admin.database();
 const pacientesRef = db.ref('pacientes');
 
 export const getPacientes = async (req, res) => {
