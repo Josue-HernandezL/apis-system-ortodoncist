@@ -170,8 +170,6 @@ async function enviarCorreoUsuarioAprobado(email, nombre) {
 // 🔽 NUEVO: Función para enviar correo al admin
 async function enviarCorreoAdmin(correoSolicitante, nombre, link) {
 
-  console.log('ADMIN_MAIL:', process.env.ADMIN_MAIL);
-  console.log('ADMIN_MAIL_PASS:', process.env.ADMIN_MAIL_PASS ? '****' : 'MISSING');
 
 
   const transporter = nodemailer.createTransport({
