@@ -14,7 +14,7 @@ const serviceAccount = JSON.parse(
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://ortodoncista-system-5c89c-default-rtdb.firebaseio.com"
+  databaseURL: "https://dente-ecc96-default-rtdb.firebaseio.com/"
 });
 
 export default admin;
