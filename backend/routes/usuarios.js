@@ -4,10 +4,6 @@ import db from '../../firebaseConfig.js';
 const router = express.Router();
 const refUsuarios = db.ref('usuarios');
 
-const ref = db.ref("Pruba de conexion");
-await ref.set({ mensaje: 'Conexión exitosa desde Node.js' });
-console.log('✅ Dato escrito con éxito');
-
 ref.once('value')
   .then(snapshot => {
     console.log('✅ Dato leído:', snapshot.val());

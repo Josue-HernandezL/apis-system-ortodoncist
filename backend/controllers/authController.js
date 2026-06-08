@@ -8,7 +8,7 @@ const db = admin.database();
 
 const usuariosRef = db.ref('usuarios');
 const solicitudesRef = db.ref('solicitudes');
-const ONLY_ADMIN_EMAIL = 'jh6466011@gmail.com'; // Cambia esto si es necesario
+const ONLY_ADMIN_EMAIL = process.env.ADMIN_MAIL; 
 
 // Verifica si ya existe un usuario admin
 const existeAdmin = async () => {
