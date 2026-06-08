@@ -33,14 +33,9 @@ export const getPacienteById = async (req, res) => {
 
 
 export const createPaciente = async (req, res) => {
-  try {
-    const nuevoPaciente = req.body;
-    const nuevoRef = pacientesRef.push();
-    await nuevoRef.set(nuevoPaciente);
-    res.status(201).json({ message: 'Paciente creado', id: nuevoRef.key });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  const nuevoRef = pacientesRef.push();
+  await nuevoRef.set(req.body); // req.body ya viene limpio si usaste Zod
+  res.status(201).json({ message: 'Paciente creado', id: nuevoRef.key });
 };
 
 
