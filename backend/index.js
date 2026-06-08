@@ -6,7 +6,11 @@ import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 
 // Importación de rutas...
+import authRoutes from './routes/authRoutes.js';
 import pacientesRoutes from './routes/pacienteRoutes.js';
+import citaRoutes from './routes/citaRoutes.js';
+import inventarioRoutes from './routes/inventarioRoutes.js';
+import pagoRoutes from './routes/pagoRoutes.js';
 import { authenticate } from './middleware/auth.js';
 
 dotenv.config();
